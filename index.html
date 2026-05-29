@@ -1,0 +1,1852 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tee & Enny Wedding Dashboard</title>
+  <style>
+    :root {
+      --ink: #111816;
+      --muted: #5f6f6a;
+      --paper: #f6f8f4;
+      --panel: #ffffff;
+      --line: #d9e0da;
+      --green: #0f4a3d;
+      --green-soft: #e3f1eb;
+      --wine: #7d1f3d;
+      --wine-soft: #f8e5eb;
+      --gold: #8b6b1f;
+      --gold-soft: #f3edcf;
+      --coral: #c75b48;
+      --blue: #28536b;
+      --blue-soft: #e6eef2;
+      --shadow: 0 18px 45px rgba(15, 74, 61, 0.09);
+      --display: "Segoe UI", Arial, Helvetica, sans-serif;
+      --body: Arial, Helvetica, sans-serif;
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(15, 74, 61, 0.045) 1px, transparent 1px),
+        linear-gradient(rgba(15, 74, 61, 0.035) 1px, transparent 1px),
+        var(--paper);
+      background-size: 34px 34px;
+      color: var(--ink);
+      font-family: var(--body);
+      line-height: 1.45;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    button,
+    input,
+    textarea {
+      transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    :focus-visible {
+      outline: 3px solid rgba(15, 74, 61, 0.28);
+      outline-offset: 3px;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      border-bottom: 1px solid rgba(217, 224, 218, 0.94);
+      background: rgba(246, 248, 244, 0.94);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 16px 22px;
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: var(--green);
+      font-family: var(--display);
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: 0;
+      box-shadow: inset 0 -8px 0 rgba(255, 255, 255, 0.1), 0 10px 24px rgba(15, 74, 61, 0.18);
+      flex: 0 0 auto;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(22px, 3vw, 32px);
+      line-height: 1.05;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand p {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .tablist {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .tab {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 9px 13px;
+      white-space: nowrap;
+    }
+
+    .tab:hover,
+    .filter-btn:hover,
+    .utility-btn:hover {
+      border-color: rgba(15, 74, 61, 0.38);
+      box-shadow: 0 8px 22px rgba(15, 74, 61, 0.08);
+    }
+
+    .tab[aria-selected="true"] {
+      background: var(--green);
+      border-color: var(--green);
+      color: #fff;
+    }
+
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 22px 48px;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .hero-board,
+    .progress-card,
+    .tile,
+    .decision-row,
+    .task-card,
+    .timeline-item,
+    .venue-table-wrap,
+    .note-block,
+    .budget-shell {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-board {
+      overflow: hidden;
+    }
+
+    .hero-main {
+      min-height: 310px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 260px;
+    }
+
+    .hero-copy {
+      padding: clamp(22px, 4vw, 42px);
+      background:
+        linear-gradient(145deg, rgba(15, 74, 61, 0.98), rgba(17, 24, 22, 0.98)),
+        var(--green);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      min-height: 28px;
+      padding: 5px 9px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-copy h2 {
+      margin: 0;
+      max-width: 760px;
+      font-family: var(--display);
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.04;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .hero-copy p {
+      max-width: 680px;
+      margin: 12px 0 0;
+      color: rgba(255, 255, 255, 0.82);
+      font-size: 17px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .hero-stat {
+      min-height: 82px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .hero-stat strong {
+      display: block;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .hero-stat span {
+      display: block;
+      margin-top: 4px;
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 13px;
+    }
+
+    .hero-image {
+      position: relative;
+      background: #e9eee8;
+      overflow: hidden;
+    }
+
+    .hero-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.94) contrast(0.98);
+    }
+
+    .image-label {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      padding: 10px 11px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      font-size: 13px;
+    }
+
+    .side-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .progress-card {
+      padding: 18px;
+    }
+
+    .progress-top {
+      display: grid;
+      grid-template-columns: 128px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+    }
+
+    .ring {
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--green) 0deg, var(--green) var(--progress-deg, 0deg), #e4e9e3 var(--progress-deg, 0deg));
+      position: relative;
+    }
+
+    .ring::after {
+      content: "";
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: #fff;
+      position: absolute;
+    }
+
+    .ring-value {
+      position: relative;
+      z-index: 1;
+      font-family: var(--display);
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .progress-copy h3,
+    .section h3,
+    .tile h3,
+    .note-block h3,
+    .budget-shell h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 23px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .progress-copy p,
+    .section-lede,
+    .tile p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .mini-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfa;
+    }
+
+    .mini strong {
+      display: block;
+      font-size: 22px;
+    }
+
+    .mini span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .section {
+      margin-top: 24px;
+      padding: 0;
+    }
+
+    .side-stack > .section {
+      margin-top: 0;
+    }
+
+    .section-header {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-header h3 {
+      margin: 0;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .tile {
+      padding: 16px;
+      min-height: 156px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tile .tag {
+      align-self: start;
+    }
+
+    .tag {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .tag.green { background: var(--green-soft); color: var(--green); }
+    .tag.wine { background: var(--wine-soft); color: var(--wine); }
+    .tag.gold { background: var(--gold-soft); color: #76510d; }
+    .tag.blue { background: var(--blue-soft); color: var(--blue); }
+    .tag.coral { background: #fae7e2; color: #8c3325; }
+    .tag.neutral { background: #eeece7; color: #555d5b; }
+
+    .owner-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .owner-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fbfcfa;
+      min-height: 170px;
+    }
+
+    .owner-panel h4 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .owner-panel ul {
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .owner-panel li + li {
+      margin-top: 7px;
+    }
+
+    .decision-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .decision-row {
+      box-shadow: none;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .decision-row strong {
+      display: block;
+    }
+
+    .decision-row span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 3px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn,
+    .utility-btn {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      padding: 7px 11px;
+    }
+
+    .filter-btn.active,
+    .utility-btn.primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .task-card {
+      box-shadow: none;
+      padding: 15px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+      min-height: 210px;
+    }
+
+    .task-card.hidden {
+      display: none;
+    }
+
+    .task-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .task-head h4 {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.2;
+    }
+
+    .task-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .task-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: auto;
+      padding-top: 4px;
+    }
+
+    .check-row input {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--green);
+    }
+
+    .check-row label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .task-card.done {
+      background: #f5faf6;
+      border-color: #bdd4c8;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      box-shadow: none;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 118px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .timeline-item time {
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .timeline-item strong {
+      display: block;
+    }
+
+    .timeline-item span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .venue-table-wrap {
+      overflow: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th,
+    td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      background: #edf3ed;
+      color: #48504e;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .budget-shell {
+      padding: 20px;
+    }
+
+    .budget-summary {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .budget-summary .mini {
+      background: #fff;
+    }
+
+    .budget-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .budget-row {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 13px;
+      background: #fbfcfa;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 124px 124px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .budget-row label {
+      display: block;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .budget-row small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .money-field span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .money-field input {
+      width: 100%;
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+    }
+
+    .notes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .idea-shell {
+      display: grid;
+      grid-template-columns: minmax(280px, 0.55fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .idea-form,
+    .idea-card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .idea-form {
+      display: grid;
+      gap: 12px;
+    }
+
+    .idea-form textarea {
+      min-height: 96px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 8px 10px;
+      background: #fbfcfa;
+      color: var(--ink);
+    }
+
+    .ideas-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .idea-card {
+      box-shadow: none;
+      display: grid;
+      gap: 10px;
+      align-content: start;
+    }
+
+    .idea-card img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #edf3ed;
+    }
+
+    .idea-card h4 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .idea-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .idea-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .danger-btn {
+      min-height: 34px;
+      border: 1px solid #ebc6c6;
+      background: #fff7f7;
+      color: #8b2525;
+      border-radius: 8px;
+      padding: 6px 10px;
+    }
+
+    .note-block {
+      box-shadow: none;
+      padding: 16px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 180px;
+      resize: vertical;
+      margin-top: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fbfcfa;
+      color: var(--ink);
+    }
+
+    .empty-state {
+      display: none;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 28px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .empty-state.visible {
+      display: block;
+    }
+
+    .footer-note {
+      margin: 18px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1040px) {
+      .topbar-inner,
+      .dashboard-grid,
+      .hero-main,
+      .task-grid,
+      .quick-actions,
+      .owner-grid,
+      .budget-grid,
+      .notes-grid,
+      .idea-shell,
+      .ideas-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner {
+        align-items: start;
+      }
+
+      .hero-image {
+        height: 240px;
+        min-height: 0;
+      }
+
+      .budget-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      main {
+        padding: 16px 12px 36px;
+      }
+
+      .topbar-inner {
+        padding: 12px;
+      }
+
+      .brand {
+        align-items: start;
+      }
+
+      .brand p {
+        display: none;
+      }
+
+      .brand h1 {
+        font-size: 22px;
+      }
+
+      .mark {
+        width: 40px;
+        height: 40px;
+      }
+
+      .hero-copy {
+        padding: 22px;
+      }
+
+      .mini-metrics,
+      .budget-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .hero-stat {
+        min-height: 70px;
+        padding: 10px;
+      }
+
+      .hero-stat strong {
+        font-size: 18px;
+      }
+
+      .hero-stat span {
+        font-size: 11px;
+      }
+
+      .progress-top,
+      .decision-row,
+      .timeline-item,
+      .budget-row {
+        grid-template-columns: 1fr;
+      }
+
+      .ring {
+        width: 112px;
+        height: 112px;
+      }
+
+      .ring::after {
+        width: 84px;
+        height: 84px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <div class="mark" aria-hidden="true">T&E</div>
+          <div>
+            <h1>Tee & Enny Wedding Dashboard</h1>
+            <p>Shared planning workspace for a Christian Nigerian-Australian wedding in Brisbane.</p>
+          </div>
+        </div>
+        <nav class="tablist" aria-label="Dashboard sections">
+          <button class="tab" type="button" data-tab="overview" aria-selected="true">Overview</button>
+          <button class="tab" type="button" data-tab="tasks" aria-selected="false">Tasks</button>
+          <button class="tab" type="button" data-tab="venues" aria-selected="false">Venues</button>
+          <button class="tab" type="button" data-tab="budget" aria-selected="false">Budget</button>
+          <button class="tab" type="button" data-tab="ideas" aria-selected="false">Ideas</button>
+          <button class="tab" type="button" data-tab="notes" aria-selected="false">Notes</button>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="overview" class="panel active" aria-labelledby="overview-tab">
+        <div class="dashboard-grid">
+          <div>
+            <div class="hero-board">
+              <div class="hero-main">
+                <div class="hero-copy">
+                  <div>
+                    <span class="eyebrow">Current planning status</span>
+                    <h2>Confirm the date, lock the venue, and move calmly.</h2>
+                    <p>The next planning path is the officiating minister's dates, venue selection near Willawong, guest experience, clothing, photography, and RSVP flow.</p>
+                  </div>
+                  <div class="hero-stats">
+                    <div class="hero-stat">
+                      <strong id="hero-complete">0%</strong>
+                      <span>tracked progress</span>
+                    </div>
+                    <div class="hero-stat">
+                      <strong>Q4 2026</strong>
+                      <span>target wedding window</span>
+                    </div>
+                    <div class="hero-stat">
+                      <strong>36 Cape St</strong>
+                      <span>planning anchor for distance</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="hero-image">
+                  <img src="timeline-reference.jpg" alt="Wedding planning timeline reference">
+                  <div class="image-label">Reference timeline saved in the wedding folder</div>
+                </div>
+              </div>
+            </div>
+
+            <section class="section">
+              <div class="section-header">
+                <div>
+                  <h3>Next Decisions</h3>
+                  <p class="section-lede">These are the choices most likely to unlock the rest of the plan.</p>
+                </div>
+              </div>
+              <div class="decision-list">
+                <div class="decision-row">
+                  <div>
+                    <strong>Officiating minister and exact date</strong>
+                    <span>Choose from the minister's calendar and confirm whether December 2026 remains the working assumption.</span>
+                  </div>
+                  <span class="tag wine">urgent</span>
+                </div>
+                <div class="decision-row">
+                  <div>
+                    <strong>Ceremony and reception venue model</strong>
+                    <span>Decide whether Unidus carries both ceremony and reception, or whether an outdoor ceremony plus Unidus reception is preferred.</span>
+                  </div>
+                  <span class="tag gold">research</span>
+                </div>
+                <div class="decision-row">
+                  <div>
+                    <strong>Invitation and RSVP platform</strong>
+                    <span>Continue Paperless Post if the design is strong, or build a couple-owned RSVP webpage once photoshoot images are ready.</span>
+                  </div>
+                  <span class="tag blue">choice</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="section">
+              <div class="section-header">
+                <div>
+                  <h3>Couple View</h3>
+                  <p class="section-lede">A practical split for Bride, Groom, and shared ownership.</p>
+                </div>
+              </div>
+              <div class="owner-grid">
+                <div class="owner-panel">
+                  <span class="tag wine">Enny</span>
+                  <h4>Bride focus</h4>
+                  <ul>
+                    <li>Dress, shoes, hair, makeup, jewellery, and fitting dates.</li>
+                    <li>Bridesmaids and bride's train shortlist.</li>
+                    <li>Vow draft, photoshoot styling, invitation feel.</li>
+                  </ul>
+                </div>
+                <div class="owner-panel">
+                  <span class="tag green">Tee</span>
+                  <h4>Groom focus</h4>
+                  <ul>
+                    <li>Officiating minister follow-up and date options.</li>
+                    <li>Suit, shoes, groomsmen, vehicles, and ceremony logistics.</li>
+                    <li>Vow draft and family travel coordination.</li>
+                  </ul>
+                </div>
+                <div class="owner-panel">
+                  <span class="tag gold">Joint</span>
+                  <h4>Shared focus</h4>
+                  <ul>
+                    <li>Venue comparison, budget ceiling, and guest list size.</li>
+                    <li>Nigerian food, Christian ceremony flow, music, and reception order.</li>
+                    <li>Honeymoon timing and overseas guest visa tracking.</li>
+                  </ul>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <aside class="side-stack">
+            <div class="progress-card section">
+              <div class="progress-top">
+                <div class="ring" id="progress-ring" aria-label="Overall task progress">
+                  <span class="ring-value" id="ring-value">0%</span>
+                </div>
+                <div class="progress-copy">
+                  <h3>Planning Health</h3>
+                  <p>Progress is calculated from the task board and saved on this browser.</p>
+                </div>
+              </div>
+              <div class="mini-metrics">
+                <div class="mini">
+                  <strong id="completed-count">0</strong>
+                  <span>tasks complete</span>
+                </div>
+                <div class="mini">
+                  <strong id="open-count">0</strong>
+                  <span>tasks open</span>
+                </div>
+                <div class="mini">
+                  <strong id="venue-count">4</strong>
+                  <span>venue options to compare</span>
+                </div>
+                <div class="mini">
+                  <strong id="budget-mini">$0</strong>
+                  <span>current budget draft</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="section">
+              <h3>Success Criteria</h3>
+              <p class="section-lede">A good wedding plan is not busy. It is clear, early, and kind to everyone involved.</p>
+              <div class="quick-actions">
+                <div class="tile">
+                  <span class="tag green">faith</span>
+                  <p>Christian ceremony, officiant, procession, vows, worship tone, and family honour are prepared early.</p>
+                </div>
+                <div class="tile">
+                  <span class="tag wine">culture</span>
+                  <p>Nigerian food, attire preferences, family travel, music, and reception flow are planned intentionally.</p>
+                </div>
+                <div class="tile">
+                  <span class="tag gold">guest care</span>
+                  <p>Invites, RSVP, transport, photos, venue comfort, and timing are clear for local and overseas guests.</p>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+
+        <section class="section">
+          <div class="section-header">
+            <div>
+              <h3>Milestone Timeline</h3>
+              <p class="section-lede">Working backwards from a December 2026 wedding target.</p>
+            </div>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <time>May 2026</time>
+              <div>
+                <strong>Coordinator meeting complete</strong>
+                <span>Ps Lilian meeting has happened. Date and minister confirmation are the first dependency.</span>
+              </div>
+              <span class="tag green">done</span>
+            </div>
+            <div class="timeline-item">
+              <time>Jun 2026</time>
+              <div>
+                <strong>Date, minister, and venue shortlist</strong>
+                <span>Secure date options, gather venue quotes, compare Unidus against nearby alternatives.</span>
+              </div>
+              <span class="tag wine">now</span>
+            </div>
+            <div class="timeline-item">
+              <time>Jul 2026</time>
+              <div>
+                <strong>Guest list and invite path</strong>
+                <span>Confirm guest categories, invitation tool, RSVP fields, and photoshoot booking.</span>
+              </div>
+              <span class="tag gold">next</span>
+            </div>
+            <div class="timeline-item">
+              <time>Aug-Sep 2026</time>
+              <div>
+                <strong>Wedding party, attire, and suppliers</strong>
+                <span>Bridal party, groomsmen, outfits, catering, photo/video, decor, and transport move into bookings.</span>
+              </div>
+              <span class="tag blue">build</span>
+            </div>
+            <div class="timeline-item">
+              <time>Oct-Nov 2026</time>
+              <div>
+                <strong>RSVP close, ceremony flow, final payments</strong>
+                <span>Confirm counts, procession, vows, reception slides, seating, and overseas guest visa readiness.</span>
+              </div>
+              <span class="tag neutral">finalise</span>
+            </div>
+            <div class="timeline-item">
+              <time>Dec 2026</time>
+              <div>
+                <strong>Wedding celebration</strong>
+                <span>Run the ceremony and reception with a clear schedule, delegated helpers, and calm handoffs.</span>
+              </div>
+              <span class="tag green">target</span>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <section id="tasks" class="panel" aria-labelledby="tasks-tab">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h3>Task Board</h3>
+              <p class="section-lede">Tick items as they become true. The dashboard progress updates automatically.</p>
+            </div>
+          </div>
+          <div class="toolbar">
+            <div class="filters" aria-label="Task filters">
+              <button class="filter-btn active" type="button" data-filter="all">All</button>
+              <button class="filter-btn" type="button" data-filter="now">Now</button>
+              <button class="filter-btn" type="button" data-filter="next">Next</button>
+              <button class="filter-btn" type="button" data-filter="later">Later</button>
+              <button class="filter-btn" type="button" data-filter="done">Done</button>
+            </div>
+            <button class="utility-btn" type="button" id="reset-progress">Reset saved ticks</button>
+          </div>
+          <div class="task-grid" id="task-grid"></div>
+          <div class="empty-state" id="empty-tasks">No tasks match this filter.</div>
+        </div>
+      </section>
+
+      <section id="venues" class="panel" aria-labelledby="venues-tab">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h3>Venue Comparison</h3>
+              <p class="section-lede">No current pricing has been invented here. Use this table to capture quotes, distance from 36 Cape Street, capacity, and fit.</p>
+            </div>
+          </div>
+          <div class="venue-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Option</th>
+                  <th>Likely Role</th>
+                  <th>Distance Target</th>
+                  <th>Cost Status</th>
+                  <th>Why It Matters</th>
+                  <th>Next Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Unidus Community Centre, Willawong</strong></td>
+                  <td>Ceremony and/or reception anchor</td>
+                  <td>About 7-10 minutes from 36 Cape Street, per current planning notes</td>
+                  <td><span class="tag gold">quote needed</span></td>
+                  <td>Local church context, Christian fit, easy access to Nigerian food logistics.</td>
+                  <td>Confirm availability, venue package, food rules, sound, chairs, setup access, and cleaning.</td>
+                </tr>
+                <tr>
+                  <td><strong>Outdoor ceremony location near Willawong</strong></td>
+                  <td>Possible ceremony before indoor reception</td>
+                  <td>Ideally under 20 minutes from Unidus and 36 Cape Street</td>
+                  <td><span class="tag gold">permit check</span></td>
+                  <td>Creates a beautiful ceremony setting while keeping reception logistics close.</td>
+                  <td>Shortlist parks/gardens, wet-weather backup, permit needs, shade, parking, and accessibility.</td>
+                </tr>
+                <tr>
+                  <td><strong>Comparable reception venue within 30 minutes</strong></td>
+                  <td>Backup or better-value reception venue</td>
+                  <td>Must be within 30 minutes of 36 Cape Street</td>
+                  <td><span class="tag wine">research</span></td>
+                  <td>Protects the plan if Unidus is unavailable, too costly, or not flexible enough.</td>
+                  <td>Collect 3-5 venue quotes with capacity, catering rules, hire time, AV, and parking.</td>
+                </tr>
+                <tr>
+                  <td><strong>Nigerian catering logistics</strong></td>
+                  <td>Food and family experience constraint</td>
+                  <td>Close enough for hot food quality and smooth delivery</td>
+                  <td><span class="tag blue">supplier quotes</span></td>
+                  <td>Food will be a high-memory part of the reception and must work with venue rules.</td>
+                  <td>Ask venues about external caterers, kitchen access, serving equipment, and cleanup expectations.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="budget" class="panel" aria-labelledby="budget-tab">
+        <div class="budget-shell">
+          <div class="section-header">
+            <div>
+              <h3>Budget Draft</h3>
+              <p class="section-lede">Use rough planning numbers first, then replace them with supplier quotes as they arrive.</p>
+            </div>
+          </div>
+          <div class="budget-summary">
+            <div class="mini">
+              <strong id="planned-total">$0</strong>
+              <span>planned total</span>
+            </div>
+            <div class="mini">
+              <strong id="actual-total">$0</strong>
+              <span>quoted or actual total</span>
+            </div>
+            <div class="mini">
+              <strong id="budget-gap">$0</strong>
+              <span>remaining against plan</span>
+            </div>
+            <div class="mini">
+              <strong id="filled-lines">0</strong>
+              <span>lines started</span>
+            </div>
+          </div>
+          <div class="budget-grid" id="budget-grid"></div>
+        </div>
+      </section>
+
+      <section id="ideas" class="panel" aria-labelledby="ideas-tab">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h3>Inspiration Board</h3>
+              <p class="section-lede">Capture suit, dress, shoes, decor, invitation, and photoshoot ideas in one place.</p>
+            </div>
+          </div>
+          <div class="idea-shell">
+            <form class="idea-form" id="idea-form">
+              <div class="field">
+                <label for="idea-owner">For</label>
+                <select id="idea-owner" required>
+                  <option value="Groom">Groom</option>
+                  <option value="Bride">Bride</option>
+                  <option value="Both">Both</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="idea-category">Category</label>
+                <select id="idea-category" required>
+                  <option value="Suit">Suit</option>
+                  <option value="Dress">Dress</option>
+                  <option value="Shoes">Shoes</option>
+                  <option value="Wedding Bands">Wedding Bands</option>
+                  <option value="Colours">Colours</option>
+                  <option value="Decor">Decor</option>
+                  <option value="Invite">Invite</option>
+                  <option value="Photoshoot">Photoshoot</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="idea-title">Title</label>
+                <input id="idea-title" type="text" placeholder="Navy tux with black lapel" required>
+              </div>
+              <div class="field">
+                <label for="idea-url">Image link</label>
+                <input id="idea-url" type="url" placeholder="https://example.com/suit.jpg">
+              </div>
+              <div class="field">
+                <label for="idea-file">Or upload image</label>
+                <input id="idea-file" type="file" accept="image/*">
+              </div>
+              <div class="field">
+                <label for="idea-note">Note</label>
+                <textarea id="idea-note" placeholder="What do you like about this idea?"></textarea>
+              </div>
+              <button class="utility-btn primary" type="submit">Add idea</button>
+            </form>
+            <div>
+              <div class="ideas-grid" id="ideas-grid"></div>
+              <div class="empty-state" id="empty-ideas">No ideas captured yet.</div>
+            </div>
+          </div>
+          <p class="footer-note">Images added here are saved in this browser. For bride and groom to see the same live board from different devices, this should be deployed with a small shared database.</p>
+        </div>
+      </section>
+
+      <section id="notes" class="panel" aria-labelledby="notes-tab">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <h3>Shared Notes</h3>
+              <p class="section-lede">Notes are saved in this browser so Tee and Enny can keep shaping the plan together.</p>
+            </div>
+          </div>
+          <div class="notes-grid">
+            <div class="note-block">
+              <span class="tag wine">Enny</span>
+              <h3>Bride Vow And Style Notes</h3>
+              <textarea data-note="brideNotes">Vow themes, dress ideas, shoes, hair, makeup, bridesmaids, and photoshoot styling.</textarea>
+            </div>
+            <div class="note-block">
+              <span class="tag green">Tee</span>
+              <h3>Groom Vow And Logistics Notes</h3>
+              <textarea data-note="groomNotes">Vow themes, suit ideas, groomsmen, vehicles, minister follow-up, and family logistics.</textarea>
+            </div>
+            <div class="note-block">
+              <span class="tag gold">Invite</span>
+              <h3>Invitation And RSVP Notes</h3>
+              <textarea data-note="inviteNotes">Paperless Post status, RSVP webpage ideas, guest categories, meal questions, and photo needs.</textarea>
+            </div>
+            <div class="note-block">
+              <span class="tag blue">Travel</span>
+              <h3>Honeymoon And Visa Notes</h3>
+              <textarea data-note="travelNotes">Immediate honeymoon vs delayed honeymoon, overseas guest visa tracking, flights, accommodation, and support needs.</textarea>
+            </div>
+          </div>
+          <p class="footer-note">Tip for the planning meeting: update date, minister, venue, guest count, and budget ceiling first. Those choices control almost everything else.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const storageKey = "tee-enny-wedding-dashboard-v1";
+    const saved = JSON.parse(localStorage.getItem(storageKey) || "{}");
+
+    const tasks = [
+      {
+        id: "coordinator-meeting",
+        title: "Church coordinator meeting with Ps Lilian",
+        detail: "Meeting completed; carry forward the action list into minister/date confirmation.",
+        owner: "Joint",
+        phase: "now",
+        area: "Ceremony",
+        defaultDone: true
+      },
+      {
+        id: "minister-date",
+        title: "Confirm officiating minister and date options",
+        detail: "Use the minister calendar to choose the strongest Q4 2026 date options.",
+        owner: "Tee",
+        phase: "now",
+        area: "Ceremony",
+        defaultDone: false
+      },
+      {
+        id: "venue-shortlist",
+        title: "Compare Unidus with nearby alternatives",
+        detail: "Capture cost, capacity, food rules, AV, parking, access time, and proximity to 36 Cape Street.",
+        owner: "Joint",
+        phase: "now",
+        area: "Venue",
+        defaultDone: false
+      },
+      {
+        id: "venue-booking",
+        title: "Book ceremony and reception venue",
+        detail: "Secure deposits, written terms, access times, wet-weather plan, and vendor rules.",
+        owner: "Joint",
+        phase: "next",
+        area: "Venue",
+        defaultDone: false
+      },
+      {
+        id: "guest-list",
+        title: "Build master guest list",
+        detail: "Separate family, church, friends, overseas guests, children, and must-invite groups.",
+        owner: "Joint",
+        phase: "now",
+        area: "Guests",
+        defaultDone: false
+      },
+      {
+        id: "invite-platform",
+        title: "Decide Paperless Post vs RSVP webpage",
+        detail: "Keep Paperless Post if the design and tracking are strong; otherwise shift to a couple-owned page.",
+        owner: "Joint",
+        phase: "now",
+        area: "Invites",
+        defaultDone: false
+      },
+      {
+        id: "photoshoot",
+        title: "Book pre-wedding photoshoot",
+        detail: "Capture images for RSVP page, invitations, reception slides, and save-the-date visuals.",
+        owner: "Joint",
+        phase: "next",
+        area: "Photo",
+        defaultDone: false
+      },
+      {
+        id: "bride-attire",
+        title: "Bride dress, shoes, and beauty budget",
+        detail: "Set budget, shortlist stores/designers, book fittings, and align with photoshoot timing.",
+        owner: "Enny",
+        phase: "next",
+        area: "Attire",
+        defaultDone: false
+      },
+      {
+        id: "groom-attire",
+        title: "Groom suit, shoes, and grooming budget",
+        detail: "Set budget, shortlist suit path, coordinate with groomsmen palette and fittings.",
+        owner: "Tee",
+        phase: "next",
+        area: "Attire",
+        defaultDone: false
+      },
+      {
+        id: "wedding-party",
+        title: "Confirm bridal party and groomsmen",
+        detail: "Lock names early so clothing, rehearsals, responsibilities, and budget expectations are clear.",
+        owner: "Joint",
+        phase: "next",
+        area: "People",
+        defaultDone: false
+      },
+      {
+        id: "wedding-bands",
+        title: "Choose and buy wedding bands",
+        detail: "Compare buying online vs a local jeweller for sizing, engraving, warranty, returns, and delivery timing.",
+        owner: "Joint",
+        phase: "next",
+        area: "Rings",
+        defaultDone: false
+      },
+      {
+        id: "procession",
+        title: "Develop ceremony procession",
+        detail: "Plan entrance order, music cues, vows, rings, family honour, prayer, and signing flow.",
+        owner: "Joint",
+        phase: "later",
+        area: "Ceremony",
+        defaultDone: false
+      },
+      {
+        id: "nigerian-catering",
+        title: "Confirm Nigerian food plan",
+        detail: "Align cuisine, service style, venue food rules, delivery timing, and family expectations.",
+        owner: "Joint",
+        phase: "next",
+        area: "Reception",
+        defaultDone: false
+      },
+      {
+        id: "vehicles",
+        title: "Plan wedding vehicles",
+        detail: "Confirm cars for couple, wedding party, family elders, transport gaps, and driver assignments.",
+        owner: "Tee",
+        phase: "later",
+        area: "Logistics",
+        defaultDone: false
+      },
+      {
+        id: "visa-tracker",
+        title: "Track overseas guest visas",
+        detail: "List likely travellers, passport status, invitation letters, lodging, and visa deadlines.",
+        owner: "Joint",
+        phase: "later",
+        area: "Travel",
+        defaultDone: false
+      },
+      {
+        id: "honeymoon",
+        title: "Choose honeymoon timing",
+        detail: "Decide immediate honeymoon vs a delayed trip after finances, leave, visas, and rest are clearer.",
+        owner: "Joint",
+        phase: "later",
+        area: "Honeymoon",
+        defaultDone: false
+      },
+      {
+        id: "vows",
+        title: "Draft vows with support",
+        detail: "Create private drafts, agree tone and length, and leave enough time for prayerful refinement.",
+        owner: "Both",
+        phase: "later",
+        area: "Ceremony",
+        defaultDone: false
+      }
+    ];
+
+    const budgetItems = [
+      ["venue", "Venue hire", "Ceremony, reception, setup, cleaning, AV"],
+      ["catering", "Catering", "Nigerian food, drinks, serving staff, rentals"],
+      ["brideDress", "Bride clothing", "Dress, alterations, accessories"],
+      ["brideShoes", "Bride shoes and beauty", "Shoes, hair, makeup, nails"],
+      ["groomSuit", "Groom clothing", "Suit, tailoring, accessories"],
+      ["groomShoes", "Groom shoes and grooming", "Shoes, barber, fragrance"],
+      ["weddingBands", "Wedding bands", "Online vs local jeweller, sizing, engraving, warranty"],
+      ["weddingParty", "Wedding party attire", "Bridesmaids, groomsmen, bride's train"],
+      ["photoVideo", "Photo and video", "Pre-wedding shoot, wedding day, editing"],
+      ["decor", "Decor and flowers", "Ceremony, reception, tables, signage"],
+      ["invites", "Invites and RSVP", "Paperless Post or website, stationery, print"],
+      ["transport", "Vehicles", "Couple, party, family, guest logistics"],
+      ["honeymoon", "Honeymoon", "Flights, accommodation, spending, visas"]
+    ];
+
+    const taskGrid = document.getElementById("task-grid");
+    const emptyTasks = document.getElementById("empty-tasks");
+    const budgetGrid = document.getElementById("budget-grid");
+    const ideasGrid = document.getElementById("ideas-grid");
+    const emptyIdeas = document.getElementById("empty-ideas");
+    const ideaForm = document.getElementById("idea-form");
+    const formatter = new Intl.NumberFormat("en-AU", { style: "currency", currency: "AUD", maximumFractionDigits: 0 });
+
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(saved));
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      }[char]));
+    }
+
+    function taskDone(task) {
+      if (!saved.tasks) saved.tasks = {};
+      if (Object.prototype.hasOwnProperty.call(saved.tasks, task.id)) return saved.tasks[task.id];
+      return task.defaultDone;
+    }
+
+    function renderTasks() {
+      taskGrid.innerHTML = tasks.map(task => {
+        const done = taskDone(task);
+        return `
+          <article class="task-card ${done ? "done" : ""}" data-task-card data-phase="${task.phase}" data-done="${done}" data-area="${task.area}">
+            <div class="task-head">
+              <h4>${task.title}</h4>
+              <span class="tag ${task.phase === "now" ? "wine" : task.phase === "next" ? "gold" : "blue"}">${task.phase}</span>
+            </div>
+            <p>${task.detail}</p>
+            <div class="task-meta">
+              <span class="tag green">${task.owner}</span>
+              <span class="tag neutral">${task.area}</span>
+            </div>
+            <div class="check-row">
+              <input id="task-${task.id}" type="checkbox" data-task="${task.id}" ${done ? "checked" : ""}>
+              <label for="task-${task.id}">${done ? "Complete" : "Mark complete"}</label>
+            </div>
+          </article>
+        `;
+      }).join("");
+      applyFilter(document.querySelector(".filter-btn.active")?.dataset.filter || "all");
+      updateProgress();
+    }
+
+    function applyFilter(filter) {
+      let visible = 0;
+      document.querySelectorAll("[data-task-card]").forEach(card => {
+        const match = filter === "all" ||
+          (filter === "done" && card.dataset.done === "true") ||
+          card.dataset.phase === filter;
+        card.classList.toggle("hidden", !match);
+        if (match) visible += 1;
+      });
+      emptyTasks.classList.toggle("visible", visible === 0);
+    }
+
+    function updateProgress() {
+      const complete = tasks.filter(taskDone).length;
+      const total = tasks.length;
+      const percent = Math.round((complete / total) * 100);
+      const open = total - complete;
+      const degrees = Math.round((percent / 100) * 360);
+      document.documentElement.style.setProperty("--progress-deg", degrees + "deg");
+      document.getElementById("ring-value").textContent = percent + "%";
+      document.getElementById("hero-complete").textContent = percent + "%";
+      document.getElementById("completed-count").textContent = complete;
+      document.getElementById("open-count").textContent = open;
+    }
+
+    function renderBudget() {
+      if (!saved.budget) saved.budget = {};
+      budgetGrid.innerHTML = budgetItems.map(([id, label, hint]) => {
+        const line = saved.budget[id] || {};
+        return `
+          <div class="budget-row">
+            <div>
+              <label for="planned-${id}">${label}</label>
+              <small>${hint}</small>
+            </div>
+            <div class="money-field">
+              <span>Planned</span>
+              <input id="planned-${id}" type="number" min="0" step="50" inputmode="numeric" data-budget="${id}" data-kind="planned" value="${line.planned || ""}" placeholder="0">
+            </div>
+            <div class="money-field">
+              <span>Quoted</span>
+              <input type="number" min="0" step="50" inputmode="numeric" data-budget="${id}" data-kind="actual" value="${line.actual || ""}" placeholder="0">
+            </div>
+          </div>
+        `;
+      }).join("");
+      updateBudget();
+    }
+
+    function updateBudget() {
+      let planned = 0;
+      let actual = 0;
+      let filled = 0;
+      Object.values(saved.budget || {}).forEach(line => {
+        const plannedValue = Number(line.planned || 0);
+        const actualValue = Number(line.actual || 0);
+        planned += plannedValue;
+        actual += actualValue;
+        if (plannedValue > 0 || actualValue > 0) filled += 1;
+      });
+      document.getElementById("planned-total").textContent = formatter.format(planned);
+      document.getElementById("actual-total").textContent = formatter.format(actual);
+      document.getElementById("budget-gap").textContent = formatter.format(planned - actual);
+      document.getElementById("budget-mini").textContent = formatter.format(planned);
+      document.getElementById("filled-lines").textContent = filled;
+    }
+
+    function hydrateNotes() {
+      if (!saved.notes) saved.notes = {};
+      document.querySelectorAll("[data-note]").forEach(area => {
+        const key = area.dataset.note;
+        if (saved.notes[key]) area.value = saved.notes[key];
+      });
+    }
+
+    function renderIdeas() {
+      if (!saved.ideas) saved.ideas = [];
+      ideasGrid.innerHTML = saved.ideas.map(idea => `
+        <article class="idea-card">
+          <img src="${escapeHtml(idea.image)}" alt="${escapeHtml(idea.title)}">
+          <div class="idea-actions">
+            <span class="tag ${idea.owner === "Bride" ? "wine" : idea.owner === "Groom" ? "green" : "gold"}">${escapeHtml(idea.owner)}</span>
+            <span class="tag neutral">${escapeHtml(idea.category)}</span>
+          </div>
+          <h4>${escapeHtml(idea.title)}</h4>
+          <p>${escapeHtml(idea.note)}</p>
+          <button class="danger-btn" type="button" data-delete-idea="${escapeHtml(idea.id)}">Remove</button>
+        </article>
+      `).join("");
+      emptyIdeas.classList.toggle("visible", saved.ideas.length === 0);
+    }
+
+    function imageFileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const image = new Image();
+          image.onload = () => {
+            const scale = Math.min(1, 1200 / Math.max(image.width, image.height));
+            const canvas = document.createElement("canvas");
+            canvas.width = Math.round(image.width * scale);
+            canvas.height = Math.round(image.height * scale);
+            const context = canvas.getContext("2d");
+            context.drawImage(image, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL("image/jpeg", 0.78));
+          };
+          image.onerror = reject;
+          image.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    document.querySelectorAll(".tab").forEach(button => {
+      button.addEventListener("click", () => {
+        const target = button.dataset.tab;
+        document.querySelectorAll(".tab").forEach(tab => tab.setAttribute("aria-selected", String(tab === button)));
+        document.querySelectorAll(".panel").forEach(panel => panel.classList.toggle("active", panel.id === target));
+      });
+    });
+
+    document.querySelectorAll(".filter-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+        applyFilter(button.dataset.filter);
+      });
+    });
+
+    document.addEventListener("change", event => {
+      const taskId = event.target.dataset.task;
+      if (taskId) {
+        if (!saved.tasks) saved.tasks = {};
+        saved.tasks[taskId] = event.target.checked;
+        saveState();
+        renderTasks();
+      }
+
+      const budgetId = event.target.dataset.budget;
+      if (budgetId) {
+        if (!saved.budget) saved.budget = {};
+        if (!saved.budget[budgetId]) saved.budget[budgetId] = {};
+        saved.budget[budgetId][event.target.dataset.kind] = event.target.value;
+        saveState();
+        updateBudget();
+      }
+    });
+
+    document.addEventListener("input", event => {
+      const noteKey = event.target.dataset.note;
+      if (noteKey) {
+        if (!saved.notes) saved.notes = {};
+        saved.notes[noteKey] = event.target.value;
+        saveState();
+      }
+    });
+
+    document.addEventListener("click", event => {
+      const ideaId = event.target.dataset.deleteIdea;
+      if (ideaId) {
+        saved.ideas = (saved.ideas || []).filter(idea => idea.id !== ideaId);
+        saveState();
+        renderIdeas();
+      }
+    });
+
+    ideaForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      const file = document.getElementById("idea-file").files[0];
+      const url = document.getElementById("idea-url").value.trim();
+      const image = file ? await imageFileToDataUrl(file) : url;
+      if (!image) {
+        document.getElementById("idea-url").focus();
+        return;
+      }
+      if (!saved.ideas) saved.ideas = [];
+      saved.ideas.unshift({
+        id: String(Date.now()),
+        owner: document.getElementById("idea-owner").value,
+        category: document.getElementById("idea-category").value,
+        title: document.getElementById("idea-title").value.trim(),
+        note: document.getElementById("idea-note").value.trim(),
+        image
+      });
+      saveState();
+      ideaForm.reset();
+      renderIdeas();
+    });
+
+    document.getElementById("reset-progress").addEventListener("click", () => {
+      saved.tasks = {};
+      saveState();
+      renderTasks();
+    });
+
+    renderTasks();
+    renderBudget();
+    renderIdeas();
+    hydrateNotes();
+  </script>
+</body>
+</html>
